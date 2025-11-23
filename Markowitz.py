@@ -59,6 +59,19 @@ class EqualWeightPortfolio:
         assets = df.columns[df.columns != self.exclude]
         self.portfolio_weights = pd.DataFrame(index=df.index, columns=df.columns)
 
+        # Number of assets (excluding the benchmark)
+        n_assets = len(assets)
+        
+        # Equal weight for each asset
+        equal_weight = 1 / n_assets
+        
+        # Assign weights for each date
+        for col in assets:
+            self.portfolio_weights[col] = equal_weight
+        
+        # The excluded column (e.g., SPY) gets zero weight
+        self.portfolio_weights[self.exclude] = 0
+
         """
         TODO: Complete Task 1 Below
         """
