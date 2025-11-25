@@ -70,7 +70,37 @@ class MyPortfolio:
         """
         TODO: Complete Task 4 Below
         """
-        
+        # 1. 計算 rolling mean returns（momentum）
+        mom = (
+            self.returns[assets]
+            .rolling(self.lookback)
+            .mean()
+        )
+
+        # 2. 計算 rolling volatility
+        vol = (
+            self.returns[assets]
+            .rolling(self.lookback)
+            .std()
+        )
+
+        # 3. momentum 必須為正；否則權重為 0
+        positive_mom = mom.clip(lower=0)
+
+        # 4. inverse volatility（避免除以 0）
+        inv_vol = 1 / vol.replace(0, np.nan)
+
+        # 5. raw score = momentum * inverse volatility
+        score = positive_mom * inv_vol
+
+        # 6. normalize → 每一天 sum(score)=1
+        weights = score.div(score.sum(axis=1), axis=0)
+
+        # 7. 塞進 portfolio_weights
+        self.portfolio_weights[assets] = weights
+
+        # 8. 被排除的（SPY）永遠是 0
+        self.portfolio_weights[self.exclude] = 0
         
         """
         TODO: Complete Task 4 Above
