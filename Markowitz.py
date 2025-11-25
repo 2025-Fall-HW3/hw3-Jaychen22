@@ -59,6 +59,9 @@ class EqualWeightPortfolio:
         assets = df.columns[df.columns != self.exclude]
         self.portfolio_weights = pd.DataFrame(index=df.index, columns=df.columns)
 
+        """
+        TODO: Complete Task 1 Below
+        """
         # Number of assets (excluding the benchmark)
         n_assets = len(assets)
         
@@ -71,11 +74,6 @@ class EqualWeightPortfolio:
         
         # The excluded column (e.g., SPY) gets zero weight
         self.portfolio_weights[self.exclude] = 0
-
-        """
-        TODO: Complete Task 1 Below
-        """
-
         """
         TODO: Complete Task 1 Above
         """
