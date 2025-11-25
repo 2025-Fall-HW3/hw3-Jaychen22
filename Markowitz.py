@@ -126,7 +126,21 @@ class RiskParityPortfolio:
         """
         TODO: Complete Task 2 Below
         """
+        # 計算 rolling volatility（用 returns）
+        # 注意：df_returns 應該跟 df 對應，是每日報酬的 DataFrame
+        rolling_vol = df_returns[assets].rolling(self.lookback).std()
 
+        # 取倒數：越穩定（波動小）→ 權重應該越大
+        inv_vol = 1 / rolling_vol
+
+        # 對每一天，把 inv_vol 正規化成 sum = 1
+        weights_raw = inv_vol.div(inv_vol.sum(axis=1), axis=0)
+
+        # 把 weights 填進整體的 weights DataFrame
+        self.portfolio_weights[assets] = weights_raw
+
+        # 被 exclude 的那個（通常是 SPY）權重設為 0
+        self.portfolio_weights[self.exclude] = 0
 
 
         """
@@ -200,11 +214,23 @@ class MeanVariancePortfolio:
                 """
                 TODO: Complete Task 3 Below
                 """
+                # Decision variable: w >= 0, sum = 1
+                w = model.addMVar(n, lb=0, ub=1, name="w")
 
+                # Quadratic objective for mean-variance:
+                # maximize  mu^T w - (gamma/2) * w^T Sigma w
+                quad_term = (gamma / 2) * w @ Sigma @ w
+                linear_term = mu @ w
+
+                model.setObjective(linear_term - quad_term, gp.GRB.MAXIMIZE)
+
+                # Constraint: sum(w) = 1
+                model.addConstr(w.sum() == 1)
+                
                 # Sample Code: Initialize Decision w and the Objective
                 # NOTE: You can modify the following code
-                w = model.addMVar(n, name="w", ub=1)
-                model.setObjective(w.sum(), gp.GRB.MAXIMIZE)
+                # w = model.addMVar(n, name="w", ub=1)
+                # model.setObjective(w.sum(), gp.GRB.MAXIMIZE)
 
                 """
                 TODO: Complete Task 3 Above
