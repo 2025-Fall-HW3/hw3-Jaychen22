@@ -139,14 +139,14 @@ class RiskParityPortfolio:
 
         # 被 exclude 的那個（通常是 SPY）權重設為 0
         self.portfolio_weights[self.exclude] = 0
-
+        self.portfolio_weights.iloc[ : self.lookback] = 0
         """
         TODO: Complete Task 2 Above
         """
 
         self.portfolio_weights.ffill(inplace=True)
         self.portfolio_weights.fillna(0, inplace=True)
-        self.portfolio_weights.iloc[ : self.lookback] = 0
+        
 
     def calculate_portfolio_returns(self):
         # Ensure weights are calculated
