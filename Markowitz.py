@@ -140,7 +140,7 @@ class RiskParityPortfolio:
         # 被 exclude 的那個（通常是 SPY）權重設為 0
         self.portfolio_weights[self.exclude] = 0
 
-
+        self.portfolio_weights.iloc[self.lookback] = 0
         """
         TODO: Complete Task 2 Above
         """
