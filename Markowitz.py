@@ -128,6 +128,8 @@ class RiskParityPortfolio:
         # 注意：df_returns 應該跟 df 對應，是每日報酬的 DataFrame
         rolling_vol = df_returns[assets].rolling(self.lookback).std()
 
+        eps = 1e-8
+        rolling_vol = rolling_vol.replace(0, eps)
         # 取倒數：越穩定（波動小）→ 權重應該越大
         inv_vol = 1 / rolling_vol
 
@@ -139,7 +141,6 @@ class RiskParityPortfolio:
 
         # 被 exclude 的那個（通常是 SPY）權重設為 0
         self.portfolio_weights[self.exclude] = 0
-        self.portfolio_weights.iloc[ : self.lookback] = 0
         """
         TODO: Complete Task 2 Above
         """
