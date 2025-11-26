@@ -128,10 +128,8 @@ class RiskParityPortfolio:
         # 注意：df_returns 應該跟 df 對應，是每日報酬的 DataFrame
         rolling_vol = df_returns[assets].rolling(self.lookback).std()
 
-        eps = 1e-8
-        rolling_vol = rolling_vol.replace(0, eps)
         # 取倒數：越穩定（波動小）→ 權重應該越大
-        inv_vol = 1 / rolling_vol
+        inv_vol = 1 / (rolling_vol+1e-6)
 
         # 對每一天，把 inv_vol 正規化成 sum = 1
         weights_raw = inv_vol.div(inv_vol.sum(axis=1), axis=0)
@@ -146,7 +144,7 @@ class RiskParityPortfolio:
         """
 
         self.portfolio_weights.ffill(inplace=True)
-        self.portfolio_weights.fillna(0, inplace=True)
+        self.portfolio_weights.iloc[: self.lookback] = 0
         
 
     def calculate_portfolio_returns(self):
