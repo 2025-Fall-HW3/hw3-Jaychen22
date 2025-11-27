@@ -141,6 +141,7 @@ class RiskParityPortfolio:
         
         self.portfolio_weights.iloc[:self.lookback] = 0
         self.portfolio_weights.ffill(inplace=True)
+        self.portfolio_weights.fillna(0, inplace=True)
         
 
     def calculate_portfolio_returns(self):
