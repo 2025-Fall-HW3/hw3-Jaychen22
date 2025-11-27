@@ -129,9 +129,9 @@ class RiskParityPortfolio:
         weights_raw = inv_vol.div(inv_vol.sum(axis=1), axis=0)
 
         # Calculate the portfolio weights
-        self.portfolio_weights = pd.DataFrame(index=df.index, columns=df.columns)
+        self.portfolio_weights = pd.DataFrame(0,index=df.index, columns=df.columns)
 
-        self.portfolio_weights[assets] = weights_raw
+        self.portfolio_weights[:, assets] = weights_raw
 
         self.portfolio_weights[self.exclude] = 0
 
