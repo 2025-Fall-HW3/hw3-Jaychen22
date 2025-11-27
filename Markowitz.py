@@ -62,17 +62,14 @@ class EqualWeightPortfolio:
         """
         TODO: Complete Task 1 Below
         """
-        # Number of assets (excluding the benchmark)
+
         n_assets = len(assets)
         
-        # Equal weight for each asset
         equal_weight = 1 / n_assets
         
-        # Assign weights for each date
         for col in assets:
             self.portfolio_weights[col] = equal_weight
         
-        # The excluded column (e.g., SPY) gets zero weight
         self.portfolio_weights[self.exclude] = 0
         """
         TODO: Complete Task 1 Above
@@ -113,38 +110,35 @@ class RiskParityPortfolio:
     def __init__(self, exclude, lookback=50):
         self.exclude = exclude
         self.lookback = lookback
+        self.eps = eps
 
     def calculate_weights(self):
         # Get the assets by excluding the specified column
         assets = df.columns[df.columns != self.exclude]
 
-        # Calculate the portfolio weights
-        self.portfolio_weights = pd.DataFrame(index=df.index, columns=df.columns)
+        
 
         """
         TODO: Complete Task 2 Below
         """
-        # 計算 rolling volatility（用 returns）
-        # 注意：df_returns 應該跟 df 對應，是每日報酬的 DataFrame
+        
         rolling_vol = df_returns[assets].rolling(self.lookback).std()
 
-        # 取倒數：越穩定（波動小）→ 權重應該越大
-        inv_vol = 1 / (rolling_vol+1e-6)
+        inv_vol = 1 / (rolling_vol + self.eps)
 
-        # 對每一天，把 inv_vol 正規化成 sum = 1
         weights_raw = inv_vol.div(inv_vol.sum(axis=1), axis=0)
 
-        # 把 weights 填進整體的 weights DataFrame
+        # Calculate the portfolio weights
+        self.portfolio_weights = pd.DataFrame(index=df.index, columns=df.columns)
+
         self.portfolio_weights[assets] = weights_raw
 
-        # 被 exclude 的那個（通常是 SPY）權重設為 0
-        self.portfolio_weights[self.exclude] = 0
         """
         TODO: Complete Task 2 Above
         """
-
+        
+        self.portfolio_weights.iloc[:self.lookback] = 0
         self.portfolio_weights.ffill(inplace=True)
-        self.portfolio_weights.iloc[: self.lookback] = 0
         
 
     def calculate_portfolio_returns(self):
@@ -165,7 +159,6 @@ class RiskParityPortfolio:
         # Ensure portfolio returns are calculated
         if not hasattr(self, "portfolio_returns"):
             self.calculate_portfolio_returns()
-
         return self.portfolio_weights, self.portfolio_returns
 
 
@@ -211,17 +204,13 @@ class MeanVariancePortfolio:
                 """
                 TODO: Complete Task 3 Below
                 """
-                # Decision variable: w >= 0, sum = 1
                 w = model.addMVar(n, lb=0, ub=1, name="w")
 
-                # Quadratic objective for mean-variance:
-                # maximize  mu^T w - (gamma/2) * w^T Sigma w
                 quad_term = (gamma / 2) * w @ Sigma @ w
                 linear_term = mu @ w
 
                 model.setObjective(linear_term - quad_term, gp.GRB.MAXIMIZE)
 
-                # Constraint: sum(w) = 1
                 model.addConstr(w.sum() == 1)
                 
                 # Sample Code: Initialize Decision w and the Objective
