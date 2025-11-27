@@ -133,6 +133,8 @@ class RiskParityPortfolio:
 
         self.portfolio_weights[assets] = weights_raw
 
+        self.portfolio_weights[self.exclude] = 0
+
         """
         TODO: Complete Task 2 Above
         """
