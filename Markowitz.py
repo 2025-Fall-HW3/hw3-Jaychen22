@@ -107,7 +107,7 @@ Implement a risk parity strategy as dataframe "rp". Please do "not" include SPY.
 
 
 class RiskParityPortfolio:
-    def __init__(self, exclude, lookback=50):
+    def __init__(self, exclude, lookback=50, eps=1e-6):
         self.exclude = exclude
         self.lookback = lookback
         self.eps = eps
