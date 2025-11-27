@@ -107,10 +107,9 @@ Implement a risk parity strategy as dataframe "rp". Please do "not" include SPY.
 
 
 class RiskParityPortfolio:
-    def __init__(self, exclude, lookback=50, eps=1e-6):
+    def __init__(self, exclude, lookback=50):
         self.exclude = exclude
         self.lookback = lookback
-        self.eps = eps
 
     def calculate_weights(self):
         # Get the assets by excluding the specified column
@@ -124,7 +123,7 @@ class RiskParityPortfolio:
         
         rolling_vol = df_returns[assets].rolling(self.lookback).std()
 
-        inv_vol = 1 / (rolling_vol + self.eps)
+        inv_vol = 1 / rolling_vol
 
         weights_raw = inv_vol.div(inv_vol.sum(axis=1), axis=0)
 
