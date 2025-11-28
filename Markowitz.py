@@ -114,7 +114,7 @@ class RiskParityPortfolio:
     def calculate_weights(self):
         # Get the assets by excluding the specified column
         assets = df.columns[df.columns != self.exclude]
-        self.profolio_weights = pd.DataFrame(index=df.index, column=df.coloumns)
+        self.profolio_weights = pd.DataFrame(index=df.index, columns=df.columns)
 
         """
         TODO: Complete Task 2 Below
