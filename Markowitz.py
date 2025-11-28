@@ -62,13 +62,15 @@ class EqualWeightPortfolio:
         """
         TODO: Complete Task 1 Below
         """
+        n_assets = len(assets)
+        
+        equal_weight = 1 / n_assets
+        
+        for col in assets:
+            self.portfolio_weights[col] = equal_weight
+        
+        self.portfolio_weights[self.exclude] = 0
 
-        for i in range(self.lookback + 1, len(df)):
-            R = df_returns.copy()[assets].iloc[i - self.lookback : i]
-            vol = R.std().values
-            inv_vol = 1 / vol
-            weights_raw = inv_vol / np.sum(inv_vol)
-            self.portfolio_weights.loc[df.index[i], assets] = weights_raw
         """
         TODO: Complete Task 1 Above
         """
@@ -112,31 +114,23 @@ class RiskParityPortfolio:
     def calculate_weights(self):
         # Get the assets by excluding the specified column
         assets = df.columns[df.columns != self.exclude]
-
-        
+        self.profolio_weights = pd.DataFrame(index=df.index, column=df.coloumns)
 
         """
         TODO: Complete Task 2 Below
         """
         
-        rolling_vol = df_returns[assets].rolling(self.lookback).std()
-
-        inv_vol = 1 / rolling_vol
-
-        weights_raw = inv_vol.div(inv_vol.sum(axis=1), axis=0)
-
-        # Calculate the portfolio weights
-        self.portfolio_weights = pd.DataFrame(index=df.index, columns=df.columns)
-
-        self.portfolio_weights[assets] = weights_raw
-
-        self.portfolio_weights[self.exclude] = 0
+        for i in range(self.lookback + 1, len(df)):
+            R = df_returns.copy()[assets].iloc[i - self.lookback : i]
+            vol = R.std().values
+            inv_vol = 1 / vol
+            weights_raw = inv_vol / np.sum(inv_vol)
+            self.portfolio_weights.loc[df.index[i], assets] = weights_raw
 
         """
         TODO: Complete Task 2 Above
         """
         
-        self.portfolio_weights.iloc[:self.lookback] = 0
         self.portfolio_weights.ffill(inplace=True)
         self.portfolio_weights.fillna(0, inplace=True)
         
