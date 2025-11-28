@@ -63,14 +63,12 @@ class EqualWeightPortfolio:
         TODO: Complete Task 1 Below
         """
 
-        n_assets = len(assets)
-        
-        equal_weight = 1 / n_assets
-        
-        for col in assets:
-            self.portfolio_weights[col] = equal_weight
-        
-        self.portfolio_weights[self.exclude] = 0
+        for i in range(self.lookback + 1, len(df)):
+            R = df_returns.copy()[assets].iloc[i - self.lookback : i]
+            vol = R.std().values
+            inv_vol = 1 / vol
+            weights_raw = inv_vol / np.sum(inv_vol)
+            self.portfolio_weights.loc[df.index[i], assets] = weights_raw
         """
         TODO: Complete Task 1 Above
         """
